@@ -91,3 +91,18 @@ app.put("/task/:id", async (req, res) => {
         return res.status(500).json({ message: "Task failed to update, " + error });
     }
 })
+
+//delete request single task
+app.delete("/task/:id", async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const task = await Task.findOne({_id: taskId});
+        if (!task) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+        await Task.deleteOne({_id: taskId});
+        return res.status(200).json({ message: "Task successfully deleted" });
+    } catch (error) {
+        return res.status(500).json({ message: "Task failed to delete, " + error });
+    }
+})

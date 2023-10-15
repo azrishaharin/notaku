@@ -33,7 +33,7 @@ const NewTask = () => {
     //post request using axios
     axios.post("http://localhost:8000/task", task).then((response) => {
       console.log("Task created");
-      Alert.alert(response.data.message);
+      // Alert.alert(response.data.message);
       setTitle("");
       setDescription("");
       //return back to previous page

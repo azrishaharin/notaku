@@ -2,8 +2,8 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View, TextInput, Button, Pla
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import * as Application from 'expo-application';
-import { useNavigation } from '@react-navigation/native';
-
+import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
 
@@ -12,6 +12,7 @@ const HomeScreen = () => {
     const [tasks, setTasks] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [userId, setUserId] = useState("");
+    const isFocused = useIsFocused();
 
     const fetchData = async () => {
         await axios.get(`http://localhost:8000/task?userId=${userId}`).then((response) => {
@@ -24,13 +25,43 @@ const HomeScreen = () => {
         })
     }
 
-
     const handleRefresh = () => {
         setRefreshing(true);
         setTimeout(() => {
             fetchData();
         }, 2000);
     };
+
+    // const handleToggleTask = (taskId) => {
+    //     const updatedTasks = tasks.map((task) => {
+    //         if (task._id === taskId) {
+    //             task.completed = !task.completed;
+    //         }
+    //         return task;
+    //     });
+    //     setTasks(updatedTasks);
+    // }
+
+    const updateTask = async (task) => {
+        const updatedTasks = tasks.map((e) => {
+            if (e._id === task._id) {
+                e.completed = !e.completed;
+            }
+            return e;
+        });
+        setTasks(updatedTasks);
+        const taskEdit = {
+            title: task.title,
+            description: task.description,
+            completed: !task.completed,
+        };
+        axios.put(`http://localhost:8000/task/${task._id}`, taskEdit).then((response) => {
+            console.log("Task updated");
+        }).catch((error) => {
+            console.log("Update error: " + error.response.data.message);
+            Alert.alert("Task Not Updated");
+        })
+    }
 
     // const mockHandleRefresh = () => {
     //     setRefreshing(true);
@@ -57,7 +88,7 @@ const HomeScreen = () => {
         }
         fetchUserId();
         fetchData();
-    }, []);
+    }, [isFocused]);
 
 
     return (
@@ -75,10 +106,17 @@ const HomeScreen = () => {
                 >
                     {tasks.map((task) => {
                         return (
-                            <Pressable key={task._id} onPress={() => navigation.navigate('TaskDetails', { task: task })}>
-                                <View style={{ width: '100%', padding: 10, backgroundColor: 'white', borderRadius: 10, marginBottom: 10 }}>
-                                    <Text style={{ fontWeight: 'bold', color: '#555843' }}>{task.title}</Text>
-                                    <Text style={{ fontSize: 12, color: 'grey' }}>{task.description}</Text>
+                            <Pressable key={task._id} onPress={() => updateTask(task)} onLongPress={() =>  navigation.navigate('TaskDetails', { task: task })}>
+                                <View style={{ width: '100%', padding: 10, backgroundColor: 'white', borderRadius: 10, marginBottom: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <View>
+                                        <Text style={{ fontWeight: 'bold', color: '#555843' }}>{task.title}</Text>
+                                        <Text style={{ fontSize: 12, color: 'grey' }}>{task.description}</Text>
+                                    </View>
+                                        <View>
+                                            {task.completed ?
+                                                <MaterialCommunityIcons name="checkbox-marked" size={20} color="green" /> : 
+                                                <MaterialCommunityIcons name="checkbox-blank-outline" size={20} color="black" />}
+                                        </View>
                                 </View>
                             </Pressable>
                         )

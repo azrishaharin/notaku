@@ -18,13 +18,23 @@ const TaskDetails = ({ route }) => {
             completed: completed,
         };
         axios.put(`http://localhost:8000/task/${task._id}`, taskEdit).then((response) => {
-            Alert.alert(response.data.message);
+            // Alert.alert(response.data.message);
             setTitle("");
             setDescription("");
             navigation.goBack();
         }).catch((error) => {
             console.log("Update error: " + error.response.data.message);
             Alert.alert("Task Not Updated");
+        })
+    }
+
+    const deleteTask = async (taskId) => {
+        await axios.delete(`http://localhost:8000/task/${taskId}`).then((response) => {
+            // Alert.alert(response.data.message);
+            navigation.goBack();
+        }).catch((error) => {
+            console.log("Delete error: " + error.response.data.message);
+            Alert.alert("Task Not Deleted");
         })
     }
 
@@ -49,7 +59,7 @@ const TaskDetails = ({ route }) => {
                 <Button title='Update' color={'white'} onPress={() => updateTask()}/>
                 </Pressable>
                 <Pressable style={[styles.buttonContainer, { backgroundColor: '#C70039' }]}>
-                <Button title='Delete' color={'white'} onPress={() => checkTask()}/>
+                <Button title='Delete' color={'white'} onPress={() => deleteTask(task._id)}/>
                 </Pressable>
             </View>
         </SafeAreaView>
