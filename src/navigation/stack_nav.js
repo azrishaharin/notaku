@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../pages/home';
 import NewTask from '../pages/create_task';
+import TaskDetails from '../pages/task_detail';
 
 const StackNavigator = () => {
     const Stack = createNativeStackNavigator();
@@ -12,6 +13,7 @@ const StackNavigator = () => {
         <Stack.Navigator>
             <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
             <Stack.Screen name="NewTask" component={NewTask} options={{headerShown: false}}/>
+            <Stack.Screen name="TaskDetails" component={TaskDetails} options={{headerShown: false}}/>
         </Stack.Navigator>
     </NavigationContainer>
   )
